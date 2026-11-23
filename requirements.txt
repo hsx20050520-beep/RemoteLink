@@ -1,0 +1,6 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+mss>=9.0
+qrcode>=7.4
+# macOS 输入注入需要（Windows 下无需安装）
+pyobjc-framework-Quartz>=10.0; sys_platform == "darwin"

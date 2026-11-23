@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0d10">
+<title>RemoteLink</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div id="stage">
+  <canvas id="screen" width="16" height="9"></canvas>
+  <div id="empty">
+    <div class="spinner"></div>
+    <p id="emptyText">正在连接桌面…</p>
+  </div>
+</div>
+
+<div id="stats" class="pill hidden">--</div>
+
+<div id="toast"></div>
+
+<div id="keys" class="keys hidden">
+  <button data-focus="1">⌨ 输入</button>
+  <button data-key="Escape">Esc</button>
+  <button data-key="Tab">Tab</button>
+  <button data-key="ControlLeft" data-mod="ctrl">Ctrl</button>
+  <button data-key="AltLeft" data-mod="alt">Alt</button>
+  <button data-key="MetaLeft" data-mod="meta">Win</button>
+  <button data-key="ArrowLeft">←</button>
+  <button data-key="ArrowUp">↑</button>
+  <button data-key="ArrowDown">↓</button>
+  <button data-key="ArrowRight">→</button>
+  <button data-key="Enter">Enter</button>
+  <button data-key="Backspace">⌫</button>
+  <button data-key="Delete">Del</button>
+</div>
+
+<div id="toolbar">
+  <button id="btnKeys" class="tool" title="键盘"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></svg></button>
+  <button id="btnMode" class="tool" title="触控模式"><svg viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/><circle cx="12" cy="12" r="5"/></svg></button>
+  <button id="btnFit" class="tool" title="缩放"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+  <button id="btnSettings" class="tool" title="画质设置"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H1a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 2.6 7a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 2.7-1.1V1a2 2 0 1 1 4 0v.1A1.6 1.6 0 0 0 17 2.6a1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H23a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1.1z"/></svg></button>
+  <button id="btnFull" class="tool" title="全屏"><svg viewBox="0 0 24 24"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
+</div>
+
+<div id="settings" class="sheet hidden">
+  <div class="sheet-head"><span>画面与操控</span><button id="btnCloseSheet">完成</button></div>
+  <div class="group">
+    <label>画质</label>
+    <div class="seg" data-field="quality">
+      <button data-value="original">原画<span>视觉无损</span></button>
+      <button data-value="hd">高清<span>省流量</span></button>
+      <button data-value="smooth">流畅<span>弱网</span></button>
+    </div>
+  </div>
+  <div class="group">
+    <label>帧率</label>
+    <div class="seg" data-field="fps">
+      <button data-value="60">60</button>
+      <button data-value="30">30</button>
+      <button data-value="15">15</button>
+    </div>
+  </div>
+  <div class="group">
+    <label>操作方式</label>
+    <div class="seg" data-field="mode">
+      <button data-value="direct">直接触控<span>点哪按哪</span></button>
+      <button data-value="trackpad">触控板<span>相对移动</span></button>
+    </div>
+  </div>
+  <div class="group" id="monitorGroup" style="display:none">
+    <label>显示器</label>
+    <div class="seg" data-field="monitor"></div>
+  </div>
+  <div class="group">
+    <label>状态</label>
+    <div class="info" id="infoBox">--</div>
+  </div>
+</div>
+
+<div id="login" class="overlay hidden">
+  <div class="card">
+    <h1>RemoteLink</h1>
+    <p>请输入 PC 端显示的访问口令，或粘贴完整链接</p>
+    <input id="tokenInput" type="text" inputmode="text" autocomplete="off"
+           autocapitalize="off" spellcheck="false" placeholder="口令 / https://…/?k=…">
+    <button id="loginBtn">连接</button>
+    <p class="hint">口令在 PC 上启动 RemoteLink 的窗口里</p>
+  </div>
+</div>
+
+<textarea id="kbd" aria-hidden="true" autocomplete="off" autocorrect="off"
+          autocapitalize="off" spellcheck="false"></textarea>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

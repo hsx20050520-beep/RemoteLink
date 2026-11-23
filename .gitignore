@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.log
+
+# 隧道二进制（运行时由 tunnel.py 自动下载 cloudflared）
+bin/
+
+# Android 构建产物
+android/.gradle/
+android/build/
+android/app/build/
+android/.idea/
+android/local.properties
+android/*.iml
+
+# 系统 / 编辑器
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
